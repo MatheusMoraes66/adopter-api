@@ -62,9 +62,10 @@ export default class PetService {
       const pet: Pet = await this.petRepository.findById(Number(id));
 
       if (!pet) {
+        this.logger.warn(`Não encontrado o Pet com o id ${id}.`);
         return {
           status: StatusCode.NOT_FOUND,
-          message: "Não encontrado o Pet.",
+          message: `Não encontrado o Pet com o id ${id}.`,
           data: [],
         };
       }
@@ -99,9 +100,10 @@ export default class PetService {
     try {
       const pet: Pet = await this.petRepository.findById(Number(id));
       if (!pet) {
+        this.logger.warn(`Não encontrado o Pet com o id ${id}.`);
         return {
           status: StatusCode.NOT_FOUND,
-          message: "Não encontrado o Pet.",
+          message: `Não encontrado o Pet com o id ${id}.`,
           data: [],
         };
       }

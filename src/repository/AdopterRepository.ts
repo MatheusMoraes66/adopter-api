@@ -18,6 +18,14 @@ export default class AdopterRepository implements IAdopterRepository {
     return await this.repository.find();
   }
 
+  async findById(id: number): Promise<Adopter> {
+    return await this.repository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
   async update(adopter: Adopter): Promise<void> {
     await this.repository.save(adopter);
   }
