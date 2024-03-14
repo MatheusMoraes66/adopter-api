@@ -1,4 +1,12 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  JoinTable,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
+import Address from "./Address";
+import Pet from "./Pet";
 
 export default class Adopter {
   @PrimaryGeneratedColumn()
@@ -11,15 +19,22 @@ export default class Adopter {
   phone: string;
   @Column({ nullable: true })
   photo?: string;
-  @Column({ nullable: true })
-  address?: string;
+  @OneToOne(() => Address, {
+    nullable: true,
+    eager: true,
+    cascade: true,
+  })
+  @JoinTable()
+  address?: Address;
+  @OneToMany(() => Pet, (pet) => pet.adopted)
+  pets!: Pet[];
 
   constructor(
     name: string,
     password: string,
     phone: string,
     photo?: string,
-    address?: string,
+    address?: Address,
   ) {
     this.name = name;
     this.password = password;
