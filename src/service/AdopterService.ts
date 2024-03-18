@@ -1,3 +1,4 @@
+import Address from "../entity/Address";
 import Adopter from "../entity/Adopter";
 import StatusCode from "../enum/StatusCode";
 import AdopterRepository from "../repository/AdopterRepository";
@@ -14,9 +15,11 @@ export default class AdopterService {
 
   async create(adopterDto: any): Promise<ResponseDto> {
     try {
-      const { name, phone, addres, photo, password } = adopterDto;
+      const { name, phone, password } = adopterDto;
 
-      const newAdopter = new Adopter(name, password, phone, photo, addres);
+      const newAdopter = new Adopter(name, password, phone);
+
+      this.logger.debug(JSON.stringify(newAdopter));
 
       this.adopterRepository.create(newAdopter);
 
@@ -38,9 +41,12 @@ export default class AdopterService {
   async list(): Promise<ResponseDto> {
     try {
       const adopter = await this.adopterRepository.list();
+
+      this.logger.debug(`Registros encotrados ${adopter.length}`);
+
       return {
-        status: StatusCode.SERVER_ERROR,
-        message: "Erro ao buscar uma adotantes.",
+        status: StatusCode.SUCCESS,
+        message: "Sucesso ao buscar uma adotantes.",
         data: adopter,
       };
     } catch (err) {
@@ -72,7 +78,12 @@ export default class AdopterService {
       adopter.password = password;
       adopter.phone = phone;
       adopter.photo = photo;
-      adopter.address = address;
+      if (address) {
+        const newAddress = new Address(address.city, address.state);
+        adopter.address = newAddress;
+      }
+
+      this.logger.debug(JSON.stringify(adopter));
 
       await this.adopterRepository.update(adopter);
 
@@ -103,6 +114,8 @@ export default class AdopterService {
           data: [],
         };
       }
+
+      this.logger.debug(JSON.stringify(adopter));
 
       await this.adopterRepository.delete(adopter);
 

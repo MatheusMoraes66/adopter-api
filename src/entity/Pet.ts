@@ -14,8 +14,8 @@ export default class Pet {
   dateOfBirth: Date;
   @Column()
   adopted: boolean;
-  @ManyToOne(() => Adopter, (adopter) => adopter.id)
-  adopter!: Adopter;
+  // @ManyToOne(() => Adopter, (adopter) => adopter.id)
+  // adopter!: Adopter;
 
   constructor(
     name: string,

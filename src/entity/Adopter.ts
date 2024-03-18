@@ -1,13 +1,13 @@
 import {
   Column,
-  JoinTable,
-  OneToMany,
+  Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import Address from "./Address";
-import Pet from "./Pet";
 
+@Entity()
 export default class Adopter {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -24,10 +24,8 @@ export default class Adopter {
     eager: true,
     cascade: true,
   })
-  @JoinTable()
+  @JoinColumn()
   address?: Address;
-  @OneToMany(() => Pet, (pet) => pet.adopted)
-  pets!: Pet[];
 
   constructor(
     name: string,

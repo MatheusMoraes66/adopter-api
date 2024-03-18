@@ -15,14 +15,14 @@ export default class PetService {
 
   async create(petDto: PetDto): Promise<ResponseDto> {
     try {
-      const newPet = new Pet(
-        petDto.name,
-        petDto.specie,
-        petDto.dateOfBirth,
-        petDto.adopted,
-      );
+      const { name, specie, dateOfBirth, adopted } = petDto;
+
+      const newPet = new Pet(name, specie, dateOfBirth, adopted);
+
       this.logger.debug(JSON.stringify(newPet));
+
       await this.petRepository.create(newPet);
+
       return {
         status: StatusCode.CREATED,
         message: "Sucesso ao criar Pet.",
@@ -41,7 +41,7 @@ export default class PetService {
   async find(): Promise<ResponseDto> {
     try {
       const pets = await this.petRepository.findAll();
-      this.logger.debug(`Quantidade de registros ${pets.length}.`);
+      this.logger.debug(`Registros encotrados  ${pets.length}.`);
       return {
         status: StatusCode.SUCCESS,
         message: "Sucesso na busca pelos Pets.",
