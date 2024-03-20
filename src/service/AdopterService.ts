@@ -59,6 +59,34 @@ export default class AdopterService {
     }
   }
 
+  async find(id: number): Promise<ResponseDto> {
+    try {
+      const adopter: Adopter = await this.adopterRepository.findById(id);
+
+      if (!adopter) {
+        this.logger.warn(`Não encontrado um adotante com o id ${id}.`);
+        return {
+          status: StatusCode.NOT_FOUND,
+          message: `Não encontrado um adotante com o id ${id}.`,
+          data: [],
+        };
+      }
+
+      return {
+        status: StatusCode.SUCCESS,
+        message: `Sucesso ao encontrar o adotante com o id ${id}.`,
+        data: adopter,
+      };
+    } catch (err) {
+      this.logger.error(err);
+      return {
+        status: StatusCode.SERVER_ERROR,
+        message: "Erro ao buscar um adotante especifico.",
+        data: [],
+      };
+    }
+  }
+
   async update(id: number, newAdopter: AdopterDto): Promise<ResponseDto> {
     try {
       const adopter: Adopter = await this.adopterRepository.findById(id);

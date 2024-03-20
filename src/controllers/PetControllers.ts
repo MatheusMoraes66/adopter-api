@@ -6,6 +6,7 @@ import Pet from "../entity/Pet";
 import PetDto from "../types/PetDto";
 import Logger from "../utils/logger";
 import PetService from "../service/PetService";
+import Size from "../enum/Size";
 
 export default class PetControllers {
   private petService;
@@ -25,6 +26,12 @@ export default class PetControllers {
         .json({ error: "Essa especie não existe" });
     }
 
+    if (petDto.size && !(petDto.size in Size)) {
+      return res
+        .status(StatusCode.NOT_FOUND)
+        .json({ error: "Essa tamanho não existe" });
+    }
+
     const { status, message } = await this.petService.create(petDto);
     this.logger.info(`(${req.method}) :: ${message}`);
     return res.status(status).json({
@@ -34,8 +41,11 @@ export default class PetControllers {
 
   async getPet(req: Request, res: Response) {
     this.logger.info(`(${req.method}) :: Buscando Pets cadastrados.`);
-    const { status, data, message } = await this.petService.find();
+
+    const { status, data, message } = await this.petService.list();
+
     this.logger.info(`(${req.method}) :: ${message}`);
+
     return res.status(status).json(data);
   }
 
@@ -68,6 +78,19 @@ export default class PetControllers {
     this.logger.info(`(${req.method}) :: Deletando o Pet com id ${id}.`);
 
     const { status, message } = await this.petService.delete(Number(id));
+
+    this.logger.info(`(${req.method}) :: ${message}`);
+    return res.status(status).json({ message });
+  }
+
+  async adoptPet(req: Request, res: Response) {
+    const { id_adopter, id_pet } = req.params;
+    this.logger.info(`(${req.method}) :: Começando processo de adoção.`);
+
+    const { status, message } = await this.petService.adopt(
+      Number(id_adopter),
+      Number(id_pet),
+    );
 
     this.logger.info(`(${req.method}) :: ${message}`);
     return res.status(status).json({ message });

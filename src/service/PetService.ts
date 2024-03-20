@@ -1,5 +1,7 @@
+import Adopter from "../entity/Adopter";
 import Pet from "../entity/Pet";
 import StatusCode from "../enum/StatusCode";
+import AdopterRepository from "../repository/AdopterRepository";
 import PetRepository from "../repository/PetRepository";
 import PetDto from "../types/PetDto";
 import ResponseDto from "../types/ResponseDto";
@@ -7,10 +9,12 @@ import Logger from "../utils/logger";
 
 export default class PetService {
   private petRepository;
+  private adopterRepository;
   private logger = new Logger();
 
   constructor() {
     this.petRepository = new PetRepository();
+    this.adopterRepository = new AdopterRepository();
   }
 
   async create(petDto: PetDto): Promise<ResponseDto> {
@@ -38,7 +42,7 @@ export default class PetService {
     }
   }
 
-  async find(): Promise<ResponseDto> {
+  async list(): Promise<ResponseDto> {
     try {
       const pets = await this.petRepository.findAll();
       this.logger.debug(`Registros encotrados  ${pets.length}.`);
@@ -118,6 +122,51 @@ export default class PetService {
       return {
         status: StatusCode.SERVER_ERROR,
         message: "Erro na operação de deletar um Pets.",
+        data: [],
+      };
+    }
+  }
+
+  async adopt(id_adopter: number, id_pet: number): Promise<ResponseDto> {
+    try {
+      const adopter: Adopter =
+        await this.adopterRepository.findById(id_adopter);
+
+      if (!adopter) {
+        this.logger.warn(`Não encontrado um adotante com o id ${id_adopter}.`);
+        return {
+          status: StatusCode.NOT_FOUND,
+          message: `Não encontrado um adotante com o id ${id_adopter}.`,
+          data: [],
+        };
+      }
+
+      const pet: Pet = await this.petRepository.findById(id_pet);
+
+      if (!pet) {
+        this.logger.warn(`Não encontrado o Pet com o id ${id_pet}.`);
+        return {
+          status: StatusCode.NOT_FOUND,
+          message: `Não encontrado o Pet com o id ${id_pet}.`,
+          data: [],
+        };
+      }
+
+      pet.adopted = true;
+      pet.adopter = adopter;
+
+      await this.petRepository.update(pet);
+
+      return {
+        status: StatusCode.SUCCESS,
+        message: "Sucesso pet adotado.",
+        data: [],
+      };
+    } catch (err) {
+      this.logger.debug(err);
+      return {
+        status: StatusCode.SERVER_ERROR,
+        message: "Erro ao adotar um Pet.",
         data: [],
       };
     }
