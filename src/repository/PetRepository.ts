@@ -1,6 +1,7 @@
 import { Repository } from "typeorm";
 import { AppDataSource } from "../config/dataSource";
 import Pet from "../entity/Pet";
+import Size from "../enum/Size";
 import IPetRepository from "./interface/IPetRepository";
 
 export default class PetRepository implements IPetRepository {
@@ -33,5 +34,17 @@ export default class PetRepository implements IPetRepository {
       },
     });
     return pet;
+  }
+
+  public async findByKey<Type extends keyof Pet>(
+    key: Type,
+    value: Pet[Type],
+  ): Promise<Pet[]> {
+    const pets = await this.repository.find({
+      where: {
+        [key]: value,
+      },
+    });
+    return pets;
   }
 }

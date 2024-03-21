@@ -11,5 +11,6 @@ petRouter.delete("/:id", (req, res) => petController.deletePet(req, res));
 petRouter.post("/:id_adopter/:id_pet", (req, res) =>
   petController.adoptPet(req, res),
 );
+petRouter.get("/search/", (req, res) => petController.search(req, res));
 
 export default petRouter;

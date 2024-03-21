@@ -1,5 +1,6 @@
 import Adopter from "../entity/Adopter";
 import Pet from "../entity/Pet";
+import Size from "../enum/Size";
 import StatusCode from "../enum/StatusCode";
 import AdopterRepository from "../repository/AdopterRepository";
 import PetRepository from "../repository/PetRepository";
@@ -19,9 +20,9 @@ export default class PetService {
 
   async create(petDto: PetDto): Promise<ResponseDto> {
     try {
-      const { name, specie, dateOfBirth, adopted } = petDto;
+      const { name, specie, dateOfBirth, adopted, size } = petDto;
 
-      const newPet = new Pet(name, specie, dateOfBirth, adopted);
+      const newPet = new Pet(name, specie, dateOfBirth, adopted, size);
 
       this.logger.debug(JSON.stringify(newPet));
 
@@ -56,6 +57,24 @@ export default class PetService {
       return {
         status: StatusCode.SERVER_ERROR,
         message: "Erro na operação de criação de Pet.",
+        data: [],
+      };
+    }
+  }
+
+  async findBykey(key: string, value: string): Promise<ResponseDto> {
+    try {
+      const pets = await this.petRepository.findByKey(key as keyof Pet, value);
+      return {
+        status: StatusCode.SUCCESS,
+        message: "Sucesso na busca pelos Pets.",
+        data: pets,
+      };
+    } catch (err) {
+      this.logger.debug(err);
+      return {
+        status: StatusCode.SERVER_ERROR,
+        message: "Erro ao buscar Pets pelo porte.",
         data: [],
       };
     }

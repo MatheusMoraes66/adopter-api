@@ -49,6 +49,31 @@ export default class PetControllers {
     return res.status(status).json(data);
   }
 
+  async search(req: Request, res: Response) {
+    this.logger.info(`(${req.method}) :: Buscando Pets cadastrados.`);
+
+    const { column, value } = req.query;
+
+    this.logger.debug(
+      `Parametro passado { key: '${column}', value: '${value}'}`,
+    );
+
+    if (!column && !value) {
+      return res
+        .status(StatusCode.NOT_FOUND)
+        .json({ error: "Coloque a coluna e o valor para buscar o Pet" });
+    }
+
+    const { status, data, message } = await this.petService.findBykey(
+      column as string,
+      value as string,
+    );
+
+    this.logger.info(`(${req.method}) :: ${message}`);
+
+    return res.status(status).json(data);
+  }
+
   async updatePet(req: Request, res: Response) {
     const { id } = req.params;
     this.logger.info(`(${req.method}) :: Atualizando o Pet com id ${id}.`);
